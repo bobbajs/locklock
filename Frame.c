@@ -9,7 +9,7 @@ struct Frame* initFrame(){
 struct Frame* initMainFrame(){
 	struct Frame* f = initFrame();
 	f->elements = (struct Frame**)malloc(4*sizeof(struct Frame*));
-	f->elements[0] = initMenuFrame();
+	f->elements[0] = initMenuFrame(f);
 	f->elements[1] = initActionFrame();
 	f->elements[2] = initSongPanel();
 	f->elements[3] = initPlaylistPanel();
@@ -18,18 +18,18 @@ struct Frame* initMainFrame(){
 	return f;
 }
 
-struct Frame* initMenuFrame(){
+struct Frame* initMenuFrame(struct Frame* mainFrame){
 	struct Frame* mf = initFrame();
 	mf->buttons = (struct Button**)malloc(2*sizeof(struct Button*));
-	mf->buttons[0] = initMenuButton(5, "All Songs", 0x123456, 0);
-	mf->buttons[1] = initMenuButton(20, "Playlists", 0x123456, 1);
+	mf->buttons[0] = initMenuButton(5, "All Songs", 0x123456, 0, mainFrame);
+	mf->buttons[1] = initMenuButton(20, "Playlists", 0x123456, 1, mainFrame);
 	mf->drawFrame = drawMenuFrame;
 	return mf;
 }
 
 struct Frame* initActionFrame(){
 	struct Frame* af = initFrame();
-	af->bg_image = loadSDImage("ART3.BMP");
+	af->bg_image = loadSDImage("GR3.BMP");
 	af->buttons = (struct Button**)malloc(5*sizeof(struct Button*));
 	af->buttons[0] = initButton();
 	af->buttons[0]->stats[0] = loadSDImage("PLAY2.BMP"); //size 30x30
@@ -69,17 +69,25 @@ struct Frame* initPlaylistPanel(){
 		pp->buttons[i] = initPlaylistButton(61, init_playlist_y, db.playlists[i]->list_name, 0x123456);
 		init_playlist_y += 3;
 	}
-	pp->drawFrame = drawSongPanel;
+	pp->drawFrame = drawPlaylistPanel;
 	return pp;
 }
 
+/**
+ * Draws all elements of mainFrame. All backgrounds are
+ * loaded and drawn in this function.
+ */
 void drawMainFrame(struct Frame* this){
 	int i = 0;
 	// do not draw the last element (playlist)
-	for (i = 0; i < this->element_size-1; i++){
-		//if (i == 2) {continue;}
+	for (i = 0; i < this->element_size - 1; i++){
 		this->elements[i]->drawFrame(this->elements[i]);
 	}
+	// TODO: put all backgrounds in here.
+	// make a struct Image array in mainFrame
+	struct Image* bg = loadSDImage("AND.BMP");
+	draw_notransparent(241, 13, bg);
+	drawVerticalLine(240, 12, 183, 0xFFFFFF);
 }
 
 void drawMenuFrame(struct Frame* this){
@@ -100,8 +108,7 @@ void drawMenuFrame(struct Frame* this){
 
 void drawActionFrame(struct Frame* this){
 	drawHorizontalLine(0, 195, SCREEN_WIDTH-1, 0xFFFFFF);
-	draw_notransparent(0, 0, this->bg_image);
-	//draw_notransparent(159, 196, this->bg_image);
+	draw_notransparent(0, 196, this->bg_image);;
 	draw(145, 200, this->buttons[0]->stats[0]);
 	draw(120, 205, this->buttons[1]->stats[0]);
 	draw(180, 205, this->buttons[2]->stats[0]);
@@ -110,13 +117,17 @@ void drawActionFrame(struct Frame* this){
 }
 
 void drawSongPanel(struct Frame* this){
-	drawVerticalLine(240, 12, 183, 0xFFFFFF);
 	int i = 1;
 	for (i = 1; i < db.num_of_songs; i++){
 		this->buttons[i]->draw(this->buttons[i]);
 	}
-	struct Image* bg = loadSDImage("GRVL2.BMP");
-	draw_notransparent(241, 13, bg);
+}
+
+void drawPlaylistPanel(struct Frame* this){
+	int i = 1;
+	for (i = 1; i < db.num_of_lists; i++){
+		this->buttons[i]->draw(this->buttons[i]);
+	}
 }
 
 void clearSongPanel(){

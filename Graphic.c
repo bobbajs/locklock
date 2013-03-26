@@ -91,16 +91,20 @@ struct Image* loadSDImage(char* filename) {
 	} printf("offset: %x\n", offset);
 	bytes++;
 	while(bytes < offset){
-		if(bytes == 18) {
-			if((width = alt_up_sd_card_read(file_pointer))< 0) {
+		if(bytes == 18 || bytes == 19) {
+			if((temp = alt_up_sd_card_read(file_pointer))< 0) {
 				alt_up_sd_card_fclose(file_pointer);
 				return false;
-			} printf("width: %d, ", width);
-		} else if(bytes == 22) {
-			if((height = alt_up_sd_card_read(file_pointer))< 0) {
+			} width += (int)temp << (bytes-18)*8 ;
+			if(bytes == 19)
+				printf("width: %d, ", width);
+		} else if(bytes == 22 || bytes == 23) {
+			if((temp = alt_up_sd_card_read(file_pointer))< 0) {
 				alt_up_sd_card_fclose(file_pointer);
 				return false;
-			} printf("height: %d\n", height);
+			} height += (int)temp << (bytes-22)*8 ;
+			if(bytes == 22)
+				printf("height: %d\n", height);
 		} else if(bytes == 34 || bytes == 35 || bytes == 36 || bytes == 37) {
 			if((temp = alt_up_sd_card_read(file_pointer))< 0) {
 				alt_up_sd_card_fclose(file_pointer);
@@ -140,7 +144,7 @@ struct Image* loadSDImage(char* filename) {
  */
 void draw(int pos_x, int pos_y, struct Image* this) {
 	if(this == NULL || this->buffer == NULL) return;
-	if(pos_x < 0 || pos_y < 0 || pos_x + this->width>= 320 || pos_y + this->height>= 240) {
+	if(pos_x < 0 || pos_y < 0 || pos_x + this->width> 320 || pos_y + this->height> 240) {
 		printf("draw image out of boundary\n");
 		return;
 	}
@@ -154,10 +158,9 @@ void draw(int pos_x, int pos_y, struct Image* this) {
 		}
 	}
 }
-
 void draw_notransparent(int pos_x, int pos_y, struct Image* this) {
 	if(this == NULL || this->buffer == NULL) return;
-	if(pos_x < 0 || pos_y < 0 || pos_x + this->width>= 320 || pos_y + this->height>= 240) {
+	if(pos_x < 0 || pos_y < 0 || pos_x + this->width> 320 || pos_y + this->height> 240) {
 		printf("draw image out of boundary\n");
 		return;
 	}
@@ -173,26 +176,6 @@ void draw_notransparent(int pos_x, int pos_y, struct Image* this) {
 }
 /*helper function to convert 32 bit color code to 16 bit color*/
 
-
-void drawBox(int x1, int y1, int x2, int y2, int color) {
-	if(x1 < 0 || y1 < 0) return;
-	int i, j, x, y, dx, dy, w = x2-x1, h = y2-y1;
-		for(i = 0; i < w; i++) {
-		    for(j = 0; j < h; j++) {
-		    	x = x1+i; y = y1+j;
-		    	// mouse is not used for now
-		    	/*if(mouse != NULL) {
-		    		dx = x-mouse->super->x; dy = y-mouse->super->y;
-		    		if(dx >= 0 && dx < 10 && dy >= 0 && dy < 10)
-		    			*(mouse->overlapImg+dy*10 + dx) = color;
-		    	}*/
-		    	IOWR_16DIRECT(pixel_buffer->buffer_start_address, ((y)*320+x)*2, color);
-		}
-	}
-}
-
-
-/*helper function to convert 32 bit color code to 16 bit color*/
 int getColor(int red, int green, int blue) {
 	return (int)(((red>>3)<<11) + ((green>>2)<<5) + (blue>>3));
 }
@@ -260,6 +243,23 @@ void setImagePos(struct Image* this, int pos_x, int pos_y) {
 	this->prev_y = this->y;
 	this->x = pos_x;
 	this->y = pos_y;
+}
+
+void drawBox(int x1, int y1, int x2, int y2, int color) {
+	if(x1 < 0 || y1 < 0) return;
+	int i, j, x, y, dx, dy, w = x2-x1, h = y2-y1;
+		for(i = 0; i < w; i++) {
+		    for(j = 0; j < h; j++) {
+		    	x = x1+i; y = y1+j;
+		    	// mouse is not used for now
+		    	/*if(mouse != NULL) {
+		    		dx = x-mouse->super->x; dy = y-mouse->super->y;
+		    		if(dx >= 0 && dx < 10 && dy >= 0 && dy < 10)
+		    			*(mouse->overlapImg+dy*10 + dx) = color;
+		    	}*/
+		    	IOWR_16DIRECT(pixel_buffer->buffer_start_address, ((y)*320+x)*2, color);
+		}
+	}
 }
 
 void drawHorizontalLine(int x, int y, int length, int color){

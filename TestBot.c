@@ -7,20 +7,10 @@
 #include "TestBot.h"
 
 void graphicTester() {
-	/*struct Image* picture;
-	int i;
-	for( i = 0; i < 1000; i ++) {
-		while((picture = loadSDImage("WIN.BMP")) == NULL);
-		draw(i%50, 0, picture);
-		killImage(picture);
-	}*/
-
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 	alt_up_char_buffer_clear(char_buffer);
 	struct Frame* mainFrame = initMainFrame();
 	mainFrame->drawFrame(mainFrame);
-	//clearSongPanel();
-
 }
 void dBTester() {
 
@@ -350,4 +340,16 @@ void cmdTester() {
 	struct Command* cmd1 = initCmd(23, 8, paras);
 
 	send((void*)cmd1, CMD);
+}
+
+int soundTester(int i) {
+	if(isCurrPlaying(i-1) < 0) {
+		if(i > db.num_of_songs)
+			i = 1;
+		playSong(db.songs[i], 100, 0, 0);
+		updateMixer();
+		enableAudioDeviceController();
+		i++;
+	}
+	return i;
 }

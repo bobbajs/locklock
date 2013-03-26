@@ -13,4 +13,5 @@ void dBTester();
 void dBTester2();
 void cmdTester();
 void graphicTester();
+int soundTester(int);
 #endif /* TESTBOT_H_ */

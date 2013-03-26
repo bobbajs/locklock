@@ -392,7 +392,7 @@ int getAndUpdateSongsFromTxt(char** arrFromSDFiles){
 	while (numOfSongs < MAX_SONGS){
 		line = (char*)malloc(sizeof(char)*501);
 		if((fileStats = readLine(fileHandler, line)) == -2) {
-			printf("File cannot be read, reopening...\n");
+			printf("File SONGS.TXT cannot be read, reopening...\n");
 			if (!alt_up_sd_card_fclose(fileHandler)){
 				printf("File is not closed properly.\n");
 			}

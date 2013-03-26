@@ -77,6 +77,8 @@ void incIndex() {
 	if(soundMixer->currIndex > 99) {
 		soundMixer->currIndex = 0;
 	}
+	if(soundMixer->indexSize <= 0)
+		syncPause(db.curr_song_id);
 	//syncUpdatePos(db.curr_song_id, db.songs[db.curr_song_id]->sound->position);
 }
 
@@ -88,9 +90,8 @@ void updateMixer() {
 			if(!checkEnd(db.songs[db.curr_song_ids[j]]->sound)) {
 				loadToSoundBuffer(db.songs[db.curr_song_ids[j]]->sound);
 				isDone = 1;
-			} else {
-				syncPause(db.curr_song_ids[j]);
-			}
+			} /*else {
+			}*/
 		}
 
 		if(isDone == 0)
@@ -105,9 +106,9 @@ void updateMixer() {
 		clearIndexBuffer(soundMixer->endIndex);
 	}
 
-	if(soundMixer->indexSize <= 0) {
+/*	if(soundMixer->indexSize <= 0) {
 		disableAudioDeviceController();
-	}
+	}*/
 }
 
 int negativeToPositive(int value) {

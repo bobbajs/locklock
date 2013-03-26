@@ -9,7 +9,7 @@ struct Button* initButton(){
 	return b;
 }
 
-struct Button* initMenuButton(int x, char* name, int color, int type){
+struct Button* initMenuButton(int x, char* name, int color, int type, struct Frame* mainFrame){
 	struct Button* b = initButton();
 	b->name = name;
 	b->x_pos = x;
@@ -17,6 +17,7 @@ struct Button* initMenuButton(int x, char* name, int color, int type){
 	b->draw = drawMenuButton;
 	b->type = type;
 	b->collide = menuButtonCollide;
+	b->mainPanel = mainFrame;
 	return b;
 }
 
@@ -57,8 +58,8 @@ void dummyDraw(struct Button* this){
 
 }
 
-void menuButtonCollide(struct Frame* this){
-	/*switch(this->eltype){
+void menuButtonCollide(struct Button* this){
+	switch(this->type){
 	case 0: // "All Songs" menu button
 		allSongsMenuButtonCollide(this);
 		break;
@@ -67,25 +68,25 @@ void menuButtonCollide(struct Frame* this){
 		break;
 	default:
 		break;
-	}*/
+	}
 }
 
-void playlistMenuButtonCollide(struct Frame* this){
+void playlistMenuButtonCollide(struct Button* this){
 	clearSongPanel();
-	if (this->elements[3] == NULL){
+	if (this->mainPanel->elements[3] == NULL){
 		printf("Playlist frame is NULL\n");
 		return;
 	}
-	this->elements[3]->drawFrame(this->elements[3]);
+	this->mainPanel->elements[3]->drawFrame(this->mainPanel->elements[3]);
 }
 
-void allSongsMenuButtonCollide(struct Frame* this){
+void allSongsMenuButtonCollide(struct Button* this){
 	clearSongPanel();
-	if (this->elements[2] == NULL){
+	if (this->mainPanel->elements[2] == NULL){
 		printf("All Songs frame is NULL\n");
 		return;
 	}
-	this->elements[2]->drawFrame(this->elements[2]);
+	this->mainPanel->elements[2]->drawFrame(this->mainPanel->elements[2]);
 }
 
 

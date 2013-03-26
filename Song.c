@@ -26,8 +26,10 @@ struct Song* initSong(char* songname) {
 void loadSong(struct Song* this) {
 	if(this == NULL) return;
 	if(this->sound != NULL)
-		unloadSong(this);
-	this->sound = loadWavSound(this->song_name);
+		return;
+	while((this->sound = loadWavSound(this->song_name)) == NULL) {
+		printf("load %s failed, reloading..\n", this->song_name);
+	}
 	addToMemory(this->sound, this->id);
 	this->size = getSoundLengthMS(this->sound);
 	this->isCached = true;
@@ -70,12 +72,12 @@ void playSong(struct Song* this, float volume, int startTime, int loops) {
 	this->volume = (int)volume;
 	if(this->sound == NULL)
 		loadSong(this);
-	int fadeLength = (int) (getLength(this) * LENGTH_OF_FADE_PERCENT);
+	/*int fadeLength = (int) (getLength(this) * LENGTH_OF_FADE_PERCENT);
 	if(fadeLength > MAX_FADE_LENGTH) {
 		fadeLength = MAX_FADE_LENGTH;
 	}
 	setFadeInLength(this->sound, fadeLength);
-	setFadeOutLength(this->sound, fadeLength);
+	setFadeOutLength(this->sound, fadeLength);*/
 	db.curr_song_ids[db.total_songs_playing++] = this->id;
 	db.curr_song_id = this->id;
 	playSound(this->sound, volume/100, startTime, loops);
@@ -83,7 +85,7 @@ void playSong(struct Song* this, float volume, int startTime, int loops) {
 }
 
 void pauseSong(struct Song* this) {
-	printf("The music start to pause.\n");
+	printf("The music %d start to pause.\n", this->id);
 	int index;
 	if(this == NULL) return;
 	if((index = isCurrPlaying(this->id)) < 0) return;
