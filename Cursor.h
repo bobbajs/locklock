@@ -29,6 +29,8 @@ void memOverlap(struct Cursor*);
 void updateCursor(struct Cursor*, int, int);
 int getCursorX(struct Cursor*);
 int getCursorY(struct Cursor*);
+
+void doesCursorCollide(struct Cursor*);
 /*
 void setPanelToCursor(struct Cursor*, struct Frame*);
 

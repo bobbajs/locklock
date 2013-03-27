@@ -6,10 +6,10 @@ enum Type{menu = 0, action = 1, song = 2, none = 3};
 struct Button{
 	enum Type buttonType;
 	struct Frame* mainPanel;
-	int type;
+	struct Range* range;
+	int type, bg_color;
 	int x_pos, y_pos;
 	char* name;
-	int bg_color;
 	struct Image* stats[2]; // show diff image when clicked
 	void (*draw)(struct Button*);
 	void (*collide) (struct Button*);

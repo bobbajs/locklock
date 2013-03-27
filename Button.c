@@ -3,6 +3,7 @@
 struct Button* initButton(){
 	struct Button* b = (struct Button*)malloc(sizeof(struct Button));
 	b->name = NULL;
+	b->range = NULL;
 	b->x_pos = 0;
 	b->y_pos = 0;
 	b->buttonType = 3;
@@ -11,6 +12,7 @@ struct Button* initButton(){
 
 struct Button* initMenuButton(int x, char* name, int color, int type, struct Frame* mainFrame){
 	struct Button* b = initButton();
+	b->range = initRange(x, 1, 10, 10);
 	b->name = name;
 	b->x_pos = x;
 	b->y_pos = 1; // all menu buttons have to be drawn at y = 1
@@ -48,7 +50,7 @@ void drawSongButton(struct Button* this){
 	// TODO: draw with different gradient background color,
 	// may need to add integer as parameter.
 	alt_up_char_buffer_string(char_buffer, this->name, this->x_pos, this->y_pos);
-	int i;
+	//int i;
 	/*for (i = 0; i < 10; i++) {
 		drawHorizontalLine(241, 13+i, 78, 0xe711ce);
 	}*/

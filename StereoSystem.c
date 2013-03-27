@@ -42,18 +42,23 @@ int main()
 	update();
 
 	alt_up_char_buffer_clear(char_buffer);
-	struct Cursor* cursor = initCursor(10, 100);
+	struct Cursor* cursor = initCursor(10, 5);
 	//Test VGA Output
 	struct Image* testImg;
 	struct Image* testImg1;
-	while((testImg = loadSDImage("TEST.BMP")) == NULL);
+	//while((testImg = loadSDImage("TEST.BMP")) == NULL);
 	//while((testImg1 = loadSDImage("ART3.BMP")) == NULL);
-	draw(35, 35, testImg);
+	//draw(35, 35, testImg);
 	//draw(0, 20, testImg1);
-	killImage(testImg);
-	alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
+	//killImage(testImg);
+	//alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
 	//graphicTester();
 	//Test End
+
+	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
+	alt_up_char_buffer_clear(char_buffer);
+	struct Frame* mainFrame = initMainFrame();
+	mainFrame->drawFrame(mainFrame);
 
 	int i = 2;
 	int count = 0;
@@ -68,9 +73,14 @@ int main()
 		cmdProcessing(scheduler);
 		updateMixer();
 
+		compareRange(cursor->super->r, mainFrame->elements[0]->buttons[0]->range);
+		//if (count % 150000 == 0){
+		//	doesCursorCollide(cursor);
+		//}
+
 		//i = soundTester(i);
 
-		updateCursor(cursor, (int)x, 100);
+		updateCursor(cursor, (int)x, 5);
 		x+=0.005;
 		if(x >= 310)
 			x = 0;

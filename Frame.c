@@ -15,6 +15,8 @@ struct Frame* initMainFrame(){
 	f->elements[3] = initPlaylistPanel();
 	f->drawFrame = drawMainFrame;
 	f->element_size = 4;
+	f->button_size = 0;
+	f->currentPanel = 0;
 	return f;
 }
 
@@ -24,6 +26,7 @@ struct Frame* initMenuFrame(struct Frame* mainFrame){
 	mf->buttons[0] = initMenuButton(5, "All Songs", 0x123456, 0, mainFrame);
 	mf->buttons[1] = initMenuButton(20, "Playlists", 0x123456, 1, mainFrame);
 	mf->drawFrame = drawMenuFrame;
+	mf->button_size = 2;
 	return mf;
 }
 
@@ -42,6 +45,7 @@ struct Frame* initActionFrame(){
 	af->buttons[4] = initButton();
 	af->buttons[4]->stats[0] = loadSDImage("NEXT.BMP");
 	af->drawFrame = drawActionFrame;
+	af->button_size = 5;
 	return af;
 }
 
@@ -56,10 +60,10 @@ struct Frame* initSongPanel(){
 	}
 	sp->drawFrame = drawSongPanel;
 	sp->background_col = 0;
+	sp->button_size = db.num_of_songs; // starts from 1
 	return sp;
 }
 
-// TODO: need to change to initPlaylistButton
 struct Frame* initPlaylistPanel(){
 	struct Frame* pp = initFrame();
 	pp->buttons = (struct Button**)malloc(50*sizeof(struct Button*));
@@ -70,6 +74,7 @@ struct Frame* initPlaylistPanel(){
 		init_playlist_y += 3;
 	}
 	pp->drawFrame = drawPlaylistPanel;
+	pp->button_size = db.num_of_lists; // starts from 1
 	return pp;
 }
 

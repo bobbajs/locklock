@@ -12,7 +12,9 @@
 struct Range {
 	int x, y;
 	int height, width;
+	int collided;
 };
 
 struct Range* initRange(int, int, int, int);
+void compareRange(struct Range*, struct Range*);
 #endif /* RANGE_H_ */

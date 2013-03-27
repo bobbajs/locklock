@@ -77,6 +77,14 @@ int getCursorX(struct Cursor* this) {
 int getCursorY(struct Cursor* this) {
 	return this->super->r->y;
 }
+
+void doesCursorCollide(struct Cursor* this){
+	//TODO: check it's position
+	//compare if it falls to one of the category, return the category
+	//otherwise 0
+}
+
+
 /*
 void cursorAnimate(struct animation** curr, int x, int y, int size, int isForward, struct Object* super, struct Cursor* this) {
 	//if(x < 0 || y <0 || x > 315 || y > 235) return;
