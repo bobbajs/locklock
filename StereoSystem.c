@@ -73,9 +73,9 @@ int main()
 		cmdProcessing(scheduler);
 		updateMixer();
 
-		compareRange(cursor->super->r, mainFrame->elements[0]->buttons[0]->range);
+		//compareRange(cursor->super->r, mainFrame->elements[0]->buttons[0]->range);
 		//if (count % 150000 == 0){
-		//	doesCursorCollide(cursor);
+			checkCollision(cursor, mainFrame->elements[0]->buttons[0]);
 		//}
 
 		//i = soundTester(i);
