@@ -19,13 +19,20 @@ struct Button* initButton();
 struct Button* initMenuButton(int, char*, int, int, struct Frame*);
 struct Button* initSongButton(int, int, char*, int);
 struct Button* initPlaylistButton(int, int, char*, int);
+struct Button* initActionButton(int);
 void drawMenuButton(struct Button*);
 void drawSongButton(struct Button*);
+void drawActionButton(struct Button*);
 void dummyDraw(struct Button*);
 void menuButtonCollide(struct Button*);
 void playlistMenuButtonCollide(struct Button*);
 void allSongsMenuButtonCollide(struct Button*);
+void actionButtonCollide(struct Button*);
+void playButtonCollide(struct Button*);
 void dummyCollide(struct Button*);
 
+// helper functions
+int getXActionBtn(int);
+int getYActionBtn(int);
 
 #endif /* BUTTON_H_ */

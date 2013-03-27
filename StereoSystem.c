@@ -42,7 +42,7 @@ int main()
 	update();
 
 	alt_up_char_buffer_clear(char_buffer);
-	struct Cursor* cursor = initCursor(10, 5);
+	struct Cursor* cursor = initCursor(10, 200);
 	//Test VGA Output
 	struct Image* testImg;
 	struct Image* testImg1;
@@ -73,17 +73,24 @@ int main()
 		cmdProcessing(scheduler);
 		updateMixer();
 
-		//compareRange(cursor->super->r, mainFrame->elements[0]->buttons[0]->range);
+		//compareRange2(cursor->super->r, mainFrame->elements[0]->buttons[1]->range, 1);
+		//compareRange2(cursor->super->r, mainFrame->elements[0]->buttons[0]->range, 0);
 		//if (count % 150000 == 0){
-			checkCollision(cursor, mainFrame->elements[0]->buttons[0]);
+		checkTxtBtnCollision(cursor, mainFrame->elements[0]->buttons[0]);
+		checkTxtBtnCollision(cursor, mainFrame->elements[0]->buttons[1]);
+		checkImgBtnCollision(cursor, mainFrame->elements[1]->buttons[0]);
 		//}
+
+		//while (x <= 310){
+		updateCursor(cursor, (int)x, 200);
+		x+=0.005;
+		//}
+		if(x >= 310)
+		x = 0;
 
 		//i = soundTester(i);
 
-		updateCursor(cursor, (int)x, 5);
-		x+=0.005;
-		if(x >= 310)
-			x = 0;
+
 	}
 
 
