@@ -14,8 +14,9 @@
 struct SoundMixer* soundMixer; //internal global variable
 
 struct SoundMixer {
-	unsigned int buffer[100][MAX_SOUNDMIXBUF];
-	int currIndex, endIndex, indexSize;
+	unsigned int buffer[300][MAX_SOUNDMIXBUF];
+	unsigned int empty_buffer[MAX_SOUNDMIXBUF];
+	volatile int currIndex, endIndex, indexSize;
 	bool cleared;
 };
 

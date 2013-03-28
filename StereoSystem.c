@@ -41,56 +41,48 @@ int main()
 	//dBTester();
 	update();
 
-	alt_up_char_buffer_clear(char_buffer);
-	struct Cursor* cursor = initCursor(10, 200);
+
+	struct Cursor* cursor = initCursor(10, 100);
 	//Test VGA Output
 	struct Image* testImg;
-	struct Image* testImg1;
-	//while((testImg = loadSDImage("TEST.BMP")) == NULL);
+	//struct Image* testImg1;
+	while((testImg = loadSDImage("TEST.BMP")) == NULL);
 	//while((testImg1 = loadSDImage("ART3.BMP")) == NULL);
-	//draw(35, 35, testImg);
+	draw(35, 35, testImg);
 	//draw(0, 20, testImg1);
-	//killImage(testImg);
-	//alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
+	killImage(testImg);
+	alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
 	//graphicTester();
 	//Test End
 
-	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
-	alt_up_char_buffer_clear(char_buffer);
-	struct Frame* mainFrame = initMainFrame();
-	mainFrame->drawFrame(mainFrame);
-
 	int i = 2;
-	int count = 0;
-	playSong(db.songs[1], 100, 0, 0);
+	/*playSong(db.songs[1], 100, 0, 0);
 	updateMixer();
-	enableAudioDeviceController();
-
-
+	enableAudioDeviceController();*/
+	syncPlay(1, 100, 0);
 	float x = getCursorX(cursor);
+	unsigned char byte1, byte2, byte3;
 	while(1) {
-		count++;
 		cmdProcessing(scheduler);
 		updateMixer();
 
-		//compareRange2(cursor->super->r, mainFrame->elements[0]->buttons[1]->range, 1);
-		//compareRange2(cursor->super->r, mainFrame->elements[0]->buttons[0]->range, 0);
-		//if (count % 150000 == 0){
-		checkTxtBtnCollision(cursor, mainFrame->elements[0]->buttons[0]);
-		checkTxtBtnCollision(cursor, mainFrame->elements[0]->buttons[1]);
-		checkImgBtnCollision(cursor, mainFrame->elements[1]->buttons[0]);
-		//}
-
-		//while (x <= 310){
-		updateCursor(cursor, (int)x, 200);
-		x+=0.005;
-		//}
-		if(x >= 310)
-		x = 0;
-
 		//i = soundTester(i);
 
+		updateCursor(cursor, (int)x, 100);
+		x+=0.005;
+		if(x >= 310)
+			x = 0;
 
+	/*	if(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte1) ==0) {
+				printf("byte1 %x\n", byte1);
+
+				while(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte2) != 0) {
+				} printf("byte2 %x\n", byte2);
+				while(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte3) !=0 ){
+
+				}
+				printf("byte3 %x\n", byte3);
+		}*/
 	}
 
 

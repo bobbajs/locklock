@@ -44,18 +44,18 @@ void killCmd(struct Command** this) {
  */
 void syncPlay(int id, int vol, int pos) {
 	char* temp[3];
-	char tempId[4];
-	char tempVol[4];
-	char tempPos[4];
-	sprintf(tempId, "%d", id);
-	sprintf(tempVol, "%d", vol);
-	sprintf(tempPos, "%d", pos);
-	temp[0] = tempId;
-	temp[1] = tempVol;
-	temp[2] = tempPos;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	temp[2] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", id);
+	sprintf(temp[1], "%d", vol);
+	sprintf(temp[2], "%d", pos);
 	struct Command* cmd = initCmd(1, 3, temp);
 	send(cmd, CMD);
 	addCmd(com.scheduler, (struct Command*)cmd);
+	free(temp[0]);
+	free(temp[1]);
+	free(temp[2]);
 }
 //index 1
 void play(int id, int vol, int pos) {
@@ -73,17 +73,20 @@ void play(int id, int vol, int pos) {
  */
 void syncPause(int id) {
 	char* temp[1];
-	char tempId[4];
-	sprintf(tempId, "%d", id);
-	temp[0] = tempId;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", id);
 	struct Command* cmd = initCmd(2, 1, temp);
 	send(cmd, CMD);
 	addCmd(com.scheduler, (struct Command*)cmd);
+	free(temp[0]);
 }
 //pause current play song; index 2
 void pause(int id) {
 	disableAudioDeviceController();
 	pauseSong(db.songs[id]);
+	//if(db.curr_playlist_id != 0) {
+		//syncNext();
+	//}
 }
 /*
  * Function to call when need to sync with Android
@@ -100,7 +103,8 @@ void stop() {
 	disableAudioDeviceController();
 	clearSoundMixer();
 	int i;
-	for(i = 0; i < db.total_songs_playing; i++) {
+	int size = db.total_songs_playing;
+	for(i = 0; i < size; i++) {
 		removeCurrPlaying(i);
 	}
 	db.curr_song_id = 0;
@@ -109,14 +113,14 @@ void stop() {
 
 void syncSetVol(int id, int vol) {
 	char* temp[2];
-	char tempId[4];
-	char tempVol[4];
-	sprintf(tempId, "%d", id);
-	sprintf(tempVol, "%d", vol);
-	temp[0] = tempId;
-	temp[1] = tempVol;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", id);
+	sprintf(temp[1], "%d", vol);
 	struct Command* cmd = initCmd(4, 2, temp);
 	addCmd(com.scheduler, cmd);
+	free(temp[0]);
+	free(temp[1]);
 }
 //index 4
 void setVolume(int id, int vol) {
@@ -130,30 +134,31 @@ void seek(int pos) {
 void syncNext(int song_id) {
 	syncStop();
 	char* temp[1];
-	char tempId[4];
-	sprintf(tempId, "%d", song_id);
-	temp[0] = tempId;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", song_id);
 	struct Command* cmd = initCmd(6, 1, temp);
 	addCmd(com.scheduler, cmd);
+	free(temp[0]);
 }
 //index 6
 void next(int song_id) {
 	printf("Next song is selected.\n");
 	if(db.curr_playlist_id == 0 && song_id < db.num_of_songs) {
 		play(song_id+1, 100, 0);
+		printf("Next song is played.\n");
 	} else if(db.curr_playlist_id != 0 && db.index_list_order[db.curr_playlist_id][db.index_list_song[db.curr_playlist_id][song_id]+1] != 0) {
 		play(db.index_list_order[db.curr_playlist_id][db.index_list_song[db.curr_playlist_id][song_id]+1], 100, 0);
+		printf("Next song is played.\n");
 	}
-	printf("Next song is played.\n");
 }
 void syncPrev(int song_id) {
 	syncStop();
 	char* temp[1];
-	char tempId[4];
-	sprintf(tempId, "%d", song_id);
-	temp[0] = tempId;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", song_id);
 	struct Command* cmd = initCmd(7, 1, temp);
 	addCmd(com.scheduler, cmd);
+	free(temp[0]);
 
 }
 //index 7
@@ -161,10 +166,11 @@ void prev(int song_id) {
 	printf("Previous song is selected.\n");
 	if(db.curr_playlist_id == 0 && song_id > 1) {
 		play(song_id-1, 100, 0);
+		printf("Previous song is played.\n");
 	} else if(db.curr_playlist_id != 0) {
 		play(db.index_list_order[db.curr_playlist_id][db.index_list_song[db.curr_playlist_id][song_id]-1], 100, 0);
+		printf("Previous song is played.\n");
 	}
-	printf("Previous song is played.\n");
 }
 
 /*
@@ -191,16 +197,18 @@ void createPlaylist(char* listname) {
  */
 void syncCreateExisitedPlaylist(char* listname, int num_of_songs, int id) {
 	char* temp[3];
-	temp[0] = listname;
-	char temp1[4];
-	char temp2[4];
-	sprintf(temp1, "%d", num_of_songs);
-	sprintf(temp2, "%d", id);
-	temp[1] = temp1;
-	temp[2] = temp2;
+	temp[0] = (char*)malloc(sizeof(char)*15);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	temp[2] = (char*)malloc(sizeof(char)*4);
+	strcpy(temp[0], listname);
+	sprintf(temp[1], "%d", num_of_songs);
+	sprintf(temp[2], "%d", id);
 	struct Command* cmd = initCmd(9, 3, temp);
 	send(cmd, CMD);
 	killCmd(&cmd);
+	free(temp[0]);
+	free(temp[1]);
+	free(temp[2]);
 }
 void createExisitedPlaylist(char* listname, int num_of_songs, int id) {
 	struct Playlist* pl = initPlaylist(listname);
@@ -214,13 +222,15 @@ void createExisitedPlaylist(char* listname, int num_of_songs, int id) {
  */
 void syncCreateSong(char* song_name, int len) {
 	char* temp[2];
-	temp[0] = song_name;
-	char temp1[4];
-	sprintf(temp1, "%d", len);
-	temp[1] = temp1;
+	temp[0] = (char*)malloc(sizeof(char)*15);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	strcpy(temp[0], song_name);
+	sprintf(temp[1], "%d", len);
 	struct Command* cmd = initCmd(10, 2, temp);
 	send(cmd, CMD);
 	killCmd(&cmd);
+	free(temp[0]);
+	free(temp[1]);
 }
 void createSong(char* song_name, int len) {
 	struct Song* song = initSong(song_name);
@@ -235,12 +245,12 @@ void createSong(char* song_name, int len) {
  */
 void syncSelectList(int id) {
 	char* temp[0];
-	char temp1[4];
-	sprintf(temp1, "%d", id);
-	temp[0] = temp1;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", id);
 	struct Command* cmd = initCmd(11, 1, temp);
 	send(cmd, CMD);
 	addCmd(com.scheduler, cmd);
+	free(temp[0]);
 }
 
 void selectList(int id) {
@@ -261,15 +271,15 @@ void syncDBFinish() {
 
 void syncAddSongToList(int list_id, int song_id) {
 	char* temp[2];
-	char templist[4];
-	char tempsong[4];
-	sprintf(templist, "%d", list_id);
-	sprintf(tempsong, "%d", song_id);
-	temp[0] = templist;
-	temp[1] = tempsong;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", list_id);
+	sprintf(temp[1], "%d", song_id);
 	struct Command* cmd = initCmd(13, 2, temp);
 	send(cmd, CMD);
 	killCmd(&cmd);
+	free(temp[0]);
+	free(temp[1]);
 	//addCmd(com.scheduler, cmd);
 }
 void addSongToList(int list_index, int song_index) {
@@ -289,15 +299,15 @@ void addSongToList(int list_index, int song_index) {
 //index 14
 void syncAddExisitedSongToList(int list_id, int song_id) {
 	char* temp[2];
-	char templist[4];
-	char tempsong[4];
-	sprintf(templist, "%d", list_id);
-	sprintf(tempsong, "%d", song_id);
-	temp[0] = templist;
-	temp[1] = tempsong;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", list_id);
+	sprintf(temp[1], "%d", song_id);
 	struct Command* cmd = initCmd(14, 2, temp);
 	send(cmd, CMD);
 	killCmd(&cmd);
+	free(temp[0]);
+	free(temp[1]);
 }
 
 //index 15
@@ -318,18 +328,18 @@ void removeSongFromList(int list_id, int song_id) {
 //index 16
 void syncUpdatePos(int song_id, int pos, int isStart) {
 	char* temp[3];
-	char tempId[4];
-	char tempPos[4];
-	char tempStart[4];
-	sprintf(tempId, "%d", song_id);
-	sprintf(tempPos, "%d", pos);
-	sprintf(tempStart, "%d", isStart);
-	temp[0] = tempId;
-	temp[1] = tempPos;
-	temp[2] = tempStart;
+	temp[0] = (char*)malloc(sizeof(char)*4);
+	temp[1] = (char*)malloc(sizeof(char)*4);
+	temp[2] = (char*)malloc(sizeof(char)*4);
+	sprintf(temp[0], "%d", song_id);
+	sprintf(temp[1], "%d", pos);
+	sprintf(temp[2], "%d", isStart);
 	struct Command* cmd = initCmd(16, 3, temp);
 	send(cmd, CMD);
 	killCmd(&cmd);
+	free(temp[0]);
+	free(temp[1]);
+	free(temp[2]);
 }
 
 void modifyPlaylistName(int index, char* new_listname) {

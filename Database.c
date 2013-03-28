@@ -23,6 +23,7 @@ void initDatabase() {
 	db.index_list_song[0][0] = 0;
 	db.playlists[0] = NULL;
 	db.songs[0] = NULL;
+	db.isPaused = false;
 	for(i = 1; i < MAX_LISTS; i++) {
 		temp = (int*)malloc(sizeof(int));
 		*temp = i;
@@ -487,8 +488,8 @@ int getAndUpdateSongsFromTxt(char** arrFromSDFiles){
 void loadSongsFromSD(){
 	char** sdsongs = NULL;
 	sdsongs = getSongsFromSD();
-	getAndUpdateSongsFromTxt(sdsongs);
-	//while(getAndUpdateSongsFromTxt() != 0);
+	//getAndUpdateSongsFromTxt(sdsongs);
+	while(getAndUpdateSongsFromTxt(sdsongs) < 0);
 
 }
 
@@ -505,11 +506,12 @@ int isCurrPlaying(int song_id) {
 }
 
 void removeCurrPlaying(int index) {
+	int j = index;
 	db.total_songs_playing--;
-	int i = index;
-	stopSound(db.songs[db.curr_song_ids[i]]->sound);
-	while(db.curr_song_ids[i] != 0) {
-		db.curr_song_ids[i] = db.curr_song_ids[++i];
+	stopSound(db.songs[db.curr_song_ids[j]]->sound);
+	for(j = index; j <= db.total_songs_playing; j++) {
+
+		db.curr_song_ids[j] = db.curr_song_ids[j+1];
 	}
 }
 
