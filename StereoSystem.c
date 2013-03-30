@@ -16,11 +16,27 @@ bool loadSDCard(alt_up_sd_card_dev* device) {
 	return false;
 }
 
+void initAnimate(struct Cursor* cursor) {
+	int timer = 2000000;
+	IOWR_16DIRECT(TIMESTAMP_BASE, 8, timer & 0xFFFF);
+	IOWR_16DIRECT(TIMESTAMP_BASE, 12, timer >> 16);
+	IOWR_16DIRECT(TIMESTAMP_BASE, 4, 0x07);
+	alt_irq_register(TIMESTAMP_IRQ, cursor, (void*)animate_ISR);
+}
+
+void initAudioBuffer() {
+	int timer = 3000000;
+	IOWR_16DIRECT(AUDIOBUFFERPROCESS_BASE, 8, timer & 0xFFFF);
+	IOWR_16DIRECT(AUDIOBUFFERPROCESS_BASE, 12, timer >> 16);
+	IOWR_16DIRECT(AUDIOBUFFERPROCESS_BASE, 4, 0x08);
+	alt_irq_register(AUDIOBUFFERPROCESS_IRQ, NULL, (void*)mix_ISR);
+
+}
 int main()
 {
 	//SD device initialization
-	alt_up_sd_card_dev *device_reference = NULL;
-	while(!loadSDCard(device_reference)) {
+	up_dev.device_reference = NULL;
+	while(!loadSDCard(up_dev.device_reference)) {
 		printf("SD card is not connected.\n");
 	}
 
@@ -37,52 +53,41 @@ int main()
 
 	initDatabase();
 	initMemory();
+
 	//sync database
-	//dBTester();
 	update();
 
-
-	struct Cursor* cursor = initCursor(10, 100);
 	//Test VGA Output
-	struct Image* testImg;
-	//struct Image* testImg1;
+	/*struct Image* testImg;
 	while((testImg = loadSDImage("TEST.BMP")) == NULL);
-	//while((testImg1 = loadSDImage("ART3.BMP")) == NULL);
 	draw(35, 35, testImg);
-	//draw(0, 20, testImg1);
-	killImage(testImg);
-	alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
+	killImage(testImg);*/
+	//alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
 	//graphicTester();
+
+	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
+	//alt_up_char_buffer_clear(char_buffer);
+
+	struct Frame* mainFrame = initMainFrame();
+	mainFrame->drawFrame(mainFrame);
+
 	//Test End
+	struct Cursor* cursor = initCursor(10, 100);
+
+	initAudioBuffer();
+	initAnimate(cursor);
 
 	int i = 2;
-	/*playSong(db.songs[1], 100, 0, 0);
-	updateMixer();
-	enableAudioDeviceController();*/
+
 	syncPlay(1, 100, 0);
-	float x = getCursorX(cursor);
-	unsigned char byte1, byte2, byte3;
+
 	while(1) {
 		cmdProcessing(scheduler);
-		updateMixer();
 
-		//i = soundTester(i);
+		i = soundTester(i);
 
-		updateCursor(cursor, (int)x, 100);
-		x+=0.005;
-		if(x >= 310)
-			x = 0;
+		checkButtonCollision(cursor, mainFrame);
 
-	/*	if(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte1) ==0) {
-				printf("byte1 %x\n", byte1);
-
-				while(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte2) != 0) {
-				} printf("byte2 %x\n", byte2);
-				while(alt_up_ps2_read_data_byte(up_dev.ps2_dev, &byte3) !=0 ){
-
-				}
-				printf("byte3 %x\n", byte3);
-		}*/
 	}
 
 

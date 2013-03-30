@@ -7,10 +7,16 @@
 
 #include "Sound.h"
 
-#define MIN_VOLUME_BITS 8
 #define DEFAULT_SAMPLE_RATE 32000
 #define DEFAULT_BITS_PER_SAMPLE 24
 
+struct buffer {
+	unsigned char *start;
+	unsigned long length;
+};
+
+// Temporary buffer to hold mp3 bytes to be decoded
+struct buffer tempBuffer;
 /**
  * Helper function to convert a millisecond value to the correct position
  * in the sound buffer
@@ -40,6 +46,161 @@ unsigned int getSoundPositionMS(struct Sound* this) {
  */
 unsigned int getSoundLengthMS(struct Sound* this) {
 	return convertToMS(this->length);
+}
+
+/*
+ * This is the input callback. The purpose of this callback is to (re)fill
+ * the stream buffer which is to be decoded. In this example, an entire file
+ * has been mapped into memory, so we just call mad_stream_buffer() with the
+ * address and length of the mapping. When this callback is called a second
+ * time, we are finished decoding.
+ */
+
+static enum mad_flow input(void *data, struct mad_stream *stream) {
+	struct Sound* sound = data;
+	unsigned char * buf = tempBuffer.start;
+
+	/* The buffer is the full pre-loaded song, so this function will only
+	 * be called twice:
+	 * 1. At the beginning of processing
+	 * 2. When this buffer is exhausted (end of the song)
+	 */
+	if (tempBuffer.length) {
+		mad_stream_buffer(stream, buf, tempBuffer.length);
+		tempBuffer.length = 0;
+		return MAD_FLOW_CONTINUE;
+	} else {
+		printf("MP3 Successfully decoded\n");
+		free(tempBuffer.start);
+		sound->length = sound->position;
+		sound->position = 0;
+		return MAD_FLOW_STOP;
+	}
+}
+
+/*
+ * This is the output callback function. It is called after each frame of
+ * MPEG audio data has been completely decoded. The purpose of this callback
+ * is to output (or play) the decoded PCM audio.
+ *
+ * (In our case, we simply put the PCM values into a buffer)
+ */
+static enum mad_flow output(void *data, struct mad_header const *header,
+		struct mad_pcm *pcm) {
+	struct Sound* sound = data;
+	unsigned int nchannels, nsamples;
+	mad_fixed_t const *left_ch, *right_ch;
+	int i;
+
+	nchannels = pcm->channels;
+	nsamples = pcm->length;
+	left_ch = pcm->samples[0];
+	right_ch = pcm->samples[1];
+
+	for (i = 0; i < nsamples; i++) {
+		if(sound->position > sound->length) {
+			printf("Trying to write more space than allocated");
+			break;
+		}
+		sound->buffer[sound->position] = (left_ch[i] & 0xFFFFFF00) >> 8;
+		sound->position++;
+	}
+
+	return MAD_FLOW_CONTINUE;
+}
+
+/*
+ * This is the error callback function. It is called whenever a decoding
+ * error occurs. The error is indicated by stream->error; the list of
+ * possible MAD_ERROR_* errors can be found in the mad.h (or stream.h)
+ * header file.
+ */
+static enum mad_flow error(void *data, struct mad_stream *stream,
+		struct mad_frame *frame) {
+	fprintf(stderr, "decoding error 0x%04x (%s) at byte offset %ld\n",
+			stream->error, mad_stream_errorstr(stream), stream->this_frame
+					- tempBuffer.start);
+
+	/* return MAD_FLOW_BREAK here to stop decoding (and propagate an error) */
+	return MAD_FLOW_BREAK;
+
+	return MAD_FLOW_CONTINUE;
+}
+
+/*
+ * This is the function called by main() above to perform all the decoding.
+ * It instantiates a decoder object and configures it with the input,
+ * output, and error callback functions above. A single call to
+ * mad_decoder_run() continues until a callback function returns
+ * MAD_FLOW_STOP (to stop decoding) or MAD_FLOW_BREAK (to stop decoding and
+ * signal an error).
+ */
+
+
+static int decodeMP3(struct Sound* this, unsigned char *start, unsigned long length) {
+	struct mad_decoder decoder;
+	int result;
+
+	/* initialize our private message structure -
+	 * this structure is for our own purposes, it is
+	 * not a data type that belongs to libMAD*/
+	tempBuffer.start = start;
+	tempBuffer.length = length;
+
+	/* configure input, output, and error functions */
+	mad_decoder_init(&decoder, this, input, 0 /* header */, 0 /* filter */,
+			output, error, 0 /* message */);
+
+	/* start decoding */
+	result = mad_decoder_run(&decoder, MAD_DECODER_MODE_SYNC);
+
+	/* release the decoder */
+	mad_decoder_finish(&decoder);
+
+	return result;
+}
+
+struct Sound* loadMP3Sound(char * file) {
+	int filePointer;
+	int i;
+	unsigned char * buf = NULL;
+	short int byte = 0;
+	int size = 0;
+
+	printf("Reading file size\n");
+	size = 0;
+	filePointer = alt_up_sd_card_fopen(file, false);
+	while (byte != -1) {
+		byte = alt_up_sd_card_read(filePointer);
+		if (size % (1024 * 1024) == 0) {
+			printf("%d MB | ", size / (1024 * 1024));
+		}
+		size++;
+	}
+	alt_up_sd_card_fclose(filePointer);
+	printf("\nFile Size: %d bytes\n", size);
+
+	struct Sound* sound = initSound(4 * size);
+
+	buf = malloc(size);
+	if (!buf) {
+		printf("Malloc failed\n");
+		exit(0);
+	}
+
+	printf("Preloading mp3\n");
+	filePointer = alt_up_sd_card_fopen(file, false);
+	for (i = 0; i < size; i++) {
+		buf[i] = alt_up_sd_card_read(filePointer);
+		if (i % (1024 * 1024) == 0) {
+			printf("%d MB | ", i / (1024 * 1024));
+		}
+	}
+	alt_up_sd_card_fclose(filePointer);
+	printf("\nPreloading complete\n");
+
+	decodeMP3(sound, buf, size);
+	return sound;
 }
 
 /**
@@ -98,20 +259,6 @@ struct Sound* loadSoundBuffer(int* property, int bytesPerSample, int srcLength, 
 	return this;
 }
 
-bool loadStreamBuffer(struct Sound* this, int* property, int weight) {
-	int i;
-	int size = 288;
-	if(weight != 0)
-		size = this->length*weight/100;
-	for(i = 0; i < size; i++) {
-		if(this->loading_pos < this->length) {
-			this->buffer[this->loading_pos] = readInt(property[3], property[1]/8);
-			this->loading_pos++;
-		} else {
-			return false;
-		}
-	} return true;
-}
 /**
  * Checks to see if the values need to be shifted to match given bytesPerSample
  * @param this - sound to change values of
@@ -160,10 +307,14 @@ void clearSoundBuffer(struct Sound* sound) {
 
 struct Sound* initSound(unsigned int length) {
 	struct Sound* this = (struct Sound*) malloc(sizeof(struct Sound));
+	if(!this)
+		printf("Failed to allocate space for sound\n");
 	this->length = length;
 	this->position = 0;
+	printf("initialize sound with length: %d", length);
 	this->buffer = (unsigned int*) malloc(sizeof(int) * length);
-	//memMgr.used_memory += length;
+	if(!this->buffer)
+		printf("Failed to allocate sound buffer\n");
 	this->playing = false;
 	this->volume = 1;
 	this->fadeVolume = 1;
@@ -174,45 +325,9 @@ struct Sound* initSound(unsigned int length) {
 	return this;
 }
 
-void handleSoundEnd(struct Sound* this) {
-	if (this->loops == 0) {
-		stopSound(this);
-	} else {
-		this->position = 0;
-		if (this->loops > 0)
-			this->loops--;
-	}
-}
-
 bool allowFade(struct Sound* this) {
 	return !(this->inFadePosition == 0 && this->outFadePosition == this->length);
 }
-
-/**
- * Update the position index for this sound.
- * Determines if the sound is complete and allows it to continue playing if
- * it should loop.
- *
- * @param numWritten - The number of values written to the buffer
- *//*
-void updateSoundPosition(struct Sound* this, int numWritten) {
-	if (!this->playing)
-		return;
-	this->position += numWritten;
-
-	if (allowFade(this)) {
-		if (this->position < this->inFadePosition)
-			setSoundVolume(this, 0.9 - ((float) (this->inFadePosition - this->position) / this->inFadePosition));
-		else if (this->position > this->outFadePosition)
-			setSoundVolume(this, 0.9 - ((float) (this->position - this->outFadePosition) / (this->length - this->outFadePosition)));
-		else
-			setSoundVolume(this, 1.0);
-	}
-
-	if (this->position >= this->length) {
-		handleSoundEnd(this);
-	}
-}*/
 
 /**
  * Creates a Sound struct and loads the correct wav file from the SD card
@@ -280,7 +395,7 @@ int* loadWavHeader(char* filename) {
 	}
 
 	int bits_per_sample = readInt(file_pointer, 2);
-	int bytes_per_sample = bits_per_sample / BITS_PER_BYTE;
+	int bytes_per_sample = bits_per_sample / 8;
 	ret[1] = bits_per_sample;
 	index += 2;
 	printf("bits/sample %d\n", bits_per_sample);
@@ -309,44 +424,17 @@ int* loadWavHeader(char* filename) {
 	ret[3] = file_pointer;
 	return ret;
 }
-/**
- * TODO: If a sounds volume is 0 this function should return right away to save processing time
- * Right now there's an ugly bug where the sound won't stop if the volume is set to 0
- *//*
-void combineSounds(struct Sound* sound, struct Sound* soundToAdd, int startIndex, int numToWrite, bool overwrite) {
-	int i;
-	int indexToWrite = startIndex;
-	int indexToRead = soundToAdd->position;
 
-	int numBitsToShift = (int) (2 * DEFAULT_BITS_PER_SAMPLE - (sound->volume + soundToAdd->volume));
-	bool useVolume = numBitsToShift > 0;
 
-	for (i = 0; i < numToWrite; i++) {
-		if (indexToWrite >= sound->length) {
-			indexToWrite = 0;
-		}
-		if (indexToRead >= soundToAdd->length) {
-			handleSoundEnd(soundToAdd);
-			if (!soundToAdd->playing) {
-				return;
-			}
-			indexToRead = 0;
-		}
-		if (overwrite) {
-			if(useVolume)
-				sound->buffer[indexToWrite] = soundToAdd->buffer[indexToRead] >> numBitsToShift;
-			else
-				sound->buffer[indexToWrite] = soundToAdd->buffer[indexToRead];
-		} else {
-			if(useVolume)
-				sound->buffer[indexToWrite] += soundToAdd->buffer[indexToRead] >> numBitsToShift;
-			else
-				sound->buffer[indexToWrite] += soundToAdd->buffer[indexToRead];
-		}
-		indexToRead++;
-		indexToWrite++;
-	}
-}*/
+struct Sound* loadSound(struct Song* this) {
+	if(this == NULL) return NULL;
+	if (strcmp(this->ext, "MP3") == 0)
+		return loadMP3Sound(this->song_name);
+	else if (strcmp(this->ext, "WAV") == 0)
+		return loadWavSound(this->song_name);
+	return NULL;
+
+}
 
 void setFadeInLength(struct Sound* this, unsigned int inFadeLength) {
 	this->inFadePosition = inFadeLength;
@@ -355,24 +443,6 @@ void setFadeInLength(struct Sound* this, unsigned int inFadeLength) {
 void setFadeOutLength(struct Sound* this, unsigned int len) {
 	this->outFadePosition = this->length - len;
 }
-
-int convertVolumeToInt(float volume) {
-	return (int) (volume * (DEFAULT_BITS_PER_SAMPLE - MIN_VOLUME_BITS)) + MIN_VOLUME_BITS;
-}
-
-/**
- * Overwrites the current sound buffer with updated volume
- *
- * IMPORTANT: This will change the raw sound data and after several
- * changes the quality of the sound will degrade.
- *//*
-void setSoundVolumeStatic(struct Sound* this, float volume) {
-	int i;
-	for (i = 0; i < this->length; i++) {
-		this->buffer[i] = this->buffer[i] << convertVolumeToInt(volume);
-	}
-	this->volume = convertVolumeToInt(1);
-}*/
 
 /**
  * Changes the sound volume so that it can be taken into account when
@@ -431,5 +501,5 @@ void unloadSound(struct Sound* sound) {
 }
 
 bool checkEnd(struct Sound* this) {
-	return (this->position >= this->length);
+	return (this->position >= this->length) & this->length != 0;
 }

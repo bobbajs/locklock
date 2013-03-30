@@ -1,19 +1,15 @@
-obj/default/sound/Sound.o: sound/Sound.c sound/Sound.h \
-  ../StereoSystem_bsp//drivers/inc/altera_up_sd_card_avalon_interface.h \
+obj/default/sound/Sound.o: sound/Sound.c sound/Sound.h sound/../Global.h \
+  ../StereoSystem_bsp/system.h ../StereoSystem_bsp/linker.h \
+  ../StereoSystem_bsp//drivers/inc/altera_up_avalon_rs232.h \
   ../StereoSystem_bsp//HAL/inc/alt_types.h \
   ../StereoSystem_bsp//HAL/inc/sys/alt_dev.h ../StereoSystem_bsp/system.h \
-  ../StereoSystem_bsp/linker.h \
   ../StereoSystem_bsp//HAL/inc/sys/alt_llist.h \
   ../StereoSystem_bsp//HAL/inc/priv/alt_dev_llist.h \
-  ../StereoSystem_bsp//HAL/inc/sys/alt_llist.h sound/SoundMixer.h \
-  sound/../Global.h \
-  ../StereoSystem_bsp//drivers/inc/altera_up_avalon_rs232.h \
+  ../StereoSystem_bsp//HAL/inc/sys/alt_llist.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_audio.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_sd_card_avalon_interface.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_video_pixel_buffer_dma.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_video_character_buffer_with_dma.h \
-  ../StereoSystem_bsp//drivers/inc/altera_up_avalon_ps2.h \
-  ../StereoSystem_bsp//drivers/inc/altera_up_ps2_mouse.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_ps2.h \
   ../StereoSystem_bsp//HAL/inc/sys/alt_stdio.h \
   ../StereoSystem_bsp//HAL/inc/sys/alt_irq.h \
@@ -34,16 +30,22 @@ obj/default/sound/Sound.o: sound/Sound.c sound/Sound.h \
   sound/../sound/../ISR_vectors.h sound/../sound/../Global.h \
   sound/../sound/SoundMixer.h sound/../PushKeyController.h \
   ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h \
-  ../StereoSystem_bsp/system.h sound/../RS232.h sound/../Queue.h \
-  sound/../Packet.h sound/../Object.h sound/../Coder.h \
-  sound/../Playlist.h sound/../Database.h sound/../Command.h \
-  sound/../Song.h sound/../TestBot.h sound/../CommandScheduler.h \
-  sound/../sound/Sound.h sound/../Graphic.h sound/../MemoryMgr.h \
-  sound/../Range.h sound/../Cursor.h sound/../Button.h sound/../Frame.h
+  sound/../RS232.h sound/../Queue.h sound/../Packet.h sound/../Object.h \
+  sound/../Coder.h sound/../Playlist.h sound/../Database.h \
+  sound/../Command.h sound/../Song.h sound/../TestBot.h \
+  sound/../CommandScheduler.h sound/../sound/Sound.h sound/../Graphic.h \
+  sound/../MemoryMgr.h sound/../Range.h sound/../Cursor.h \
+  sound/../Button.h sound/../Frame.h sound/../libMad/mad.h
 
 sound/Sound.h:
 
-../StereoSystem_bsp//drivers/inc/altera_up_sd_card_avalon_interface.h:
+sound/../Global.h:
+
+../StereoSystem_bsp/system.h:
+
+../StereoSystem_bsp/linker.h:
+
+../StereoSystem_bsp//drivers/inc/altera_up_avalon_rs232.h:
 
 ../StereoSystem_bsp//HAL/inc/alt_types.h:
 
@@ -51,19 +53,11 @@ sound/Sound.h:
 
 ../StereoSystem_bsp/system.h:
 
-../StereoSystem_bsp/linker.h:
-
 ../StereoSystem_bsp//HAL/inc/sys/alt_llist.h:
 
 ../StereoSystem_bsp//HAL/inc/priv/alt_dev_llist.h:
 
 ../StereoSystem_bsp//HAL/inc/sys/alt_llist.h:
-
-sound/SoundMixer.h:
-
-sound/../Global.h:
-
-../StereoSystem_bsp//drivers/inc/altera_up_avalon_rs232.h:
 
 ../StereoSystem_bsp//drivers/inc/altera_up_avalon_audio.h:
 
@@ -72,10 +66,6 @@ sound/../Global.h:
 ../StereoSystem_bsp//drivers/inc/altera_up_avalon_video_pixel_buffer_dma.h:
 
 ../StereoSystem_bsp//drivers/inc/altera_up_avalon_video_character_buffer_with_dma.h:
-
-../StereoSystem_bsp//drivers/inc/altera_up_avalon_ps2.h:
-
-../StereoSystem_bsp//drivers/inc/altera_up_ps2_mouse.h:
 
 ../StereoSystem_bsp//drivers/inc/altera_up_avalon_ps2.h:
 
@@ -127,8 +117,6 @@ sound/../PushKeyController.h:
 
 ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h:
 
-../StereoSystem_bsp/system.h:
-
 sound/../RS232.h:
 
 sound/../Queue.h:
@@ -164,3 +152,5 @@ sound/../Cursor.h:
 sound/../Button.h:
 
 sound/../Frame.h:
+
+sound/../libMad/mad.h:

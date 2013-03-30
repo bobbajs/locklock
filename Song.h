@@ -15,7 +15,7 @@ int song_id_lock;
 struct Song {
 	struct Sound* sound;
 	char song_name[SONGNAME_LENGTH];
-	char ext[3];
+	char ext[4];
 	int volume;
 	int pos;
 	int size;
@@ -36,7 +36,6 @@ void resumeSong(struct Song*);
 void seekSong(struct Song*, unsigned int);
 void unloadSong(struct Song*);
 void loadSong(struct Song*);
-void loadStream(struct Song*, int*, int);
 int getSongPosition(struct Song*);
 int getLength(struct Song*);
 #endif /* SONG_H_ */
