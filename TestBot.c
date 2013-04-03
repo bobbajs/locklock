@@ -15,10 +15,22 @@ void graphicTester() {
 		killImage(picture);
 	}*/
 
-	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
-	alt_up_char_buffer_clear(char_buffer);
-	struct Frame* mainFrame = initMainFrame();
-	mainFrame->drawFrame(mainFrame);
+	// click one playlist
+	//playlistButtonCollide(mouse->frame->elements[3]->buttons[1]);
+
+	//drawAllSongsInList();
+	/*int i;
+	for (i = 0; i < 5000; i++){
+		drawAllSongsInList(5);
+		printf("Iteration %d\n", i);
+	}*/
+	/*int j;
+	for (i = 0; i < 50; i++){
+		for (j = 0; j < 20; j++){
+			highlightSongWithID(j);
+			printf("highlight iteration %d\n", i);
+		}
+	}*/
 }
 void dBTester() {
 
@@ -355,6 +367,7 @@ int soundTester(int i) {
 		if(i > db.num_of_songs)
 			i = 1;
 		syncPlay(i, 100, 0);
+		//syncPlay(1, 100, 0);
 		//playSong(db.songs[i], 100, 0, 0);
 		//updateMixer();
 		//enableAudioDeviceController();

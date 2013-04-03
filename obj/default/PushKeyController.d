@@ -23,7 +23,8 @@ obj/default/PushKeyController.o: PushKeyController.c PushKeyController.h \
   ../StereoSystem_bsp//HAL/inc/priv/alt_alarm.h RS232.h Queue.h Packet.h \
   Object.h Coder.h Playlist.h Database.h Command.h Song.h TestBot.h \
   CommandScheduler.h sound/SoundMixer.h sound/../Global.h sound/Sound.h \
-  sound/../libMad/mad.h sound/AudioDeviceController.h \
+  sound/../libMad/mad.h sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h \
+  sound/AudioFormat.h sound/AudioDeviceController.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_audio.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_audio_and_video_config.h \
   ../StereoSystem_bsp//drivers/inc/altera_up_avalon_audio_and_video_config_regs.h \
@@ -116,6 +117,12 @@ sound/../Global.h:
 sound/Sound.h:
 
 sound/../libMad/mad.h:
+
+sound/../DSP/PhaseVocoder.h:
+
+sound/../DSP/fft.h:
+
+sound/AudioFormat.h:
 
 sound/AudioDeviceController.h:
 

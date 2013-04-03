@@ -35,8 +35,10 @@ obj/default/sound/SoundMixer.o: sound/SoundMixer.c sound/SoundMixer.h \
   sound/../Coder.h sound/../Playlist.h sound/../Database.h \
   sound/../Command.h sound/../Song.h sound/../TestBot.h \
   sound/../CommandScheduler.h sound/../sound/Sound.h \
-  sound/../sound/../libMad/mad.h sound/../Graphic.h sound/../MemoryMgr.h \
-  sound/../Range.h sound/../Cursor.h sound/../Button.h sound/../Frame.h
+  sound/../sound/../libMad/mad.h sound/../sound/../DSP/PhaseVocoder.h \
+  sound/../sound/../DSP/fft.h sound/../sound/AudioFormat.h \
+  sound/../Graphic.h sound/../MemoryMgr.h sound/../Range.h \
+  sound/../Cursor.h sound/../Button.h sound/../Frame.h
 
 sound/SoundMixer.h:
 
@@ -143,6 +145,12 @@ sound/../CommandScheduler.h:
 sound/../sound/Sound.h:
 
 sound/../sound/../libMad/mad.h:
+
+sound/../sound/../DSP/PhaseVocoder.h:
+
+sound/../sound/../DSP/fft.h:
+
+sound/../sound/AudioFormat.h:
 
 sound/../Graphic.h:
 

@@ -33,8 +33,9 @@ obj/default/sound/AudioDeviceController.o: sound/AudioDeviceController.c \
   sound/../Command.h sound/../Song.h sound/../TestBot.h \
   sound/../CommandScheduler.h sound/../sound/SoundMixer.h \
   sound/../sound/../Global.h sound/../sound/Sound.h \
-  sound/../sound/../libMad/mad.h sound/../sound/AudioDeviceController.h \
-  sound/../PushKeyController.h \
+  sound/../sound/../libMad/mad.h sound/../sound/../DSP/PhaseVocoder.h \
+  sound/../sound/../DSP/fft.h sound/../sound/AudioFormat.h \
+  sound/../sound/AudioDeviceController.h sound/../PushKeyController.h \
   ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h \
   sound/../Graphic.h sound/../MemoryMgr.h sound/../Range.h \
   sound/../Cursor.h sound/../Button.h sound/../Frame.h sound/../Global.h
@@ -136,6 +137,12 @@ sound/../sound/../Global.h:
 sound/../sound/Sound.h:
 
 sound/../sound/../libMad/mad.h:
+
+sound/../sound/../DSP/PhaseVocoder.h:
+
+sound/../sound/../DSP/fft.h:
+
+sound/../sound/AudioFormat.h:
 
 sound/../sound/AudioDeviceController.h:
 

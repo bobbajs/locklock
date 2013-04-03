@@ -7,7 +7,6 @@
 #include "Database.h"
 
 void initDatabase() {
-	//db.cache = initCache();
 	db.curr_song_id = 1;
 	db.curr_playlist_id = 0;
 	db.num_of_lists = 0;
@@ -23,7 +22,7 @@ void initDatabase() {
 	db.index_list_song[0][0] = 0;
 	db.playlists[0] = NULL;
 	db.songs[0] = NULL;
-	db.isPaused = false;
+	db.isListRepeated = 0;
 	for(i = 1; i < MAX_LISTS; i++) {
 		temp = (int*)malloc(sizeof(int));
 		*temp = i;
@@ -63,6 +62,7 @@ void update() {
 			}
 		}
 	}
+	syncSelectList(db.curr_playlist_id);
 	syncDBFinish();
 }
 /*
@@ -344,12 +344,12 @@ char** getSongsFromSD(){
 			strcpy(songNames[numOfSounds], fileName);
 			//createSong(fileName, 0);
 			numOfSounds++;
-		} /*else if(strstr(fileName, ".MP3") != NULL) {
+		} else if(strstr(fileName, ".MP3") != NULL) {
 			songNames[numOfSounds] = malloc(20 * sizeof(char));
 			strcpy(songNames[numOfSounds], fileName);
 			//createSong(fileName, 0);
 			numOfSounds++;
-		}*/
+		}
 		memset(fileName, 0 , sizeof(fileName));
 		fileStatus = alt_up_sd_card_find_next(fileName);
 	}
@@ -393,7 +393,7 @@ int getAndUpdateSongsFromTxt(char** arrFromSDFiles){
 	char* line = NULL;
 	char temp[501];
 	char substr[501];
-	int start, end, i, iteration;
+	int start = 0, end, i, iteration;
 	int numOfSongs = 0, fileStats = 0;
 	while (numOfSongs < MAX_SONGS){
 		line = (char*)malloc(sizeof(char)*501);
@@ -513,7 +513,7 @@ int isCurrPlaying(int song_id) {
 void removeCurrPlaying(int index) {
 	int j;
 	db.total_songs_playing--;
-	stopSound(db.songs[db.curr_song_ids[index]]->sound);
+	//stopSound(db.songs[db.curr_song_ids[index]]->sound);
 	for(j = index; j <= db.total_songs_playing; j++) {
 
 		db.curr_song_ids[j] = db.curr_song_ids[j+1];
@@ -672,7 +672,7 @@ void initializeListWithSongs(char* input){
 
 	char line[1024];
 	char temp[1024];
-	int i, list_id, song_id, cursorPos;
+	int i, list_id = 0, song_id, cursorPos = 0;
 	int iteration = 0;
 	int order = 1;
 	memset(line, 0, sizeof(line)/sizeof(line[0]));

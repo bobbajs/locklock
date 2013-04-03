@@ -15,37 +15,6 @@ struct Range* initRange(int x, int y, int w, int h) {
 	this->height = h;
 	return this;
 }
-
-void compareRange(struct Range* r1, struct Range* r2, int type){
-	int r2_xRange_start = 4 * r2->x; // this is text button
-
-	int r2_xRange_end = 4*r2->x + r2->width;
-	if (r2_xRange_end > 320){
-		r2_xRange_end = 320;
-	}
-
-	int r2_yRange_start = 4*r2->y;
-
-	int r2_yRange_end = 4*r2->y + r2->height;
-	if (r2_yRange_end > 240){
-		r2_yRange_end = 240;
-	}
-
-	if (r1->x >= r2_xRange_start && r1->x < r2_xRange_end &&
-		r1->y >= r2_yRange_start && r1->y < r2_yRange_end){
-		//r1->currentlyCollided = 1;
-		r2->currentlyCollided = 1;
-	} else {
-		r2->currentlyCollided = 0;
-	}
-
-	if (r2->previouslyCollided == 0 && r2->currentlyCollided == 1){
-		printf("Collision! Calling collide() for type %d\n", type);
-	}
-
-	r2->previouslyCollided = r2->currentlyCollided;
-}
-
 /**
  * checkTextCollisionForMouse
  */
@@ -117,7 +86,11 @@ void checkImgCollisionForMouse(void* cursor, void* button){
 						((struct Button*)button)->isClicked = 0;
 						((struct Cursor*)cursor)->isLeftPressed = false;
 					} else if (((struct Button*)button)->isClicked == 0) {
-						// button is clicked!
+						// button is clicked-animate action button
+						if (((struct Button*)button)->buttonType == action){
+							((struct Button*)button)->startAnimate = 1;
+							animateButton(((struct Button*)button), 1);
+						}
 						r_button->currentlyCollided = 1;
 						((struct Button*)button)->isClicked = 1;
 					}
@@ -156,25 +129,48 @@ void checkButtonCollision(void* c, void* mf){
 	checkTxtCollisionForMouse(cursor, mainFrame->elements[0]->buttons[0]);
 
 	// check action buttons
-	//checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[0]);
-	//checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[1]);
-	//checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[2]);
-	//checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[3]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[0]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[1]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[2]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[3]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[1]->buttons[4]);
 
-
-	// check song buttons
+	int i;
 	if (mainFrame->currentPanel == 0){
-		int i = 0;
 		for (i = 1; i <= mainFrame->elements[2]->button_size; i++){
 			checkTxtCollisionForMouse(cursor, mainFrame->elements[2]->buttons[i]);
 		}
-	} else {
-		int i = 0;
+	} else if (mainFrame->currentPanel == 1){
 		for (i = 1; i <= mainFrame->elements[3]->button_size; i++){
 			checkTxtCollisionForMouse(cursor, mainFrame->elements[3]->buttons[i]);
 		}
+	} else if (mainFrame->currentPanel == 2){
+		for (i = 1; i <= mainFrame->elements[3]->elements[0]->button_size; i++){
+			checkTxtCollisionForMouse(cursor, mainFrame->elements[3]->elements[0]->buttons[i]);
+		}
 	}
 
+	// check Volume Buttons
+	checkImgCollisionForMouse(cursor, mainFrame->elements[5]->buttons[0]);
+	checkImgCollisionForMouse(cursor, mainFrame->elements[5]->buttons[1]);
+
+	actionBtnAnimation(mainFrame);
+}
+
+void actionBtnAnimation(void* mf){
+	struct Frame* mainFrame = (struct Frame*)mf;
+
+	int i;
+	for (i = 0; i < 5; i++){
+		if (mainFrame->elements[1]->buttons[i]->startAnimate == 1){
+			mainFrame->elements[1]->buttons[i]->frame++;
+		}
+		if (mainFrame->elements[1]->buttons[i]->frame == 2){
+			mainFrame->elements[1]->buttons[i]->startAnimate = 0;
+			mainFrame->elements[1]->buttons[i]->frame = 0;
+			animateButton(mainFrame->elements[1]->buttons[i], 0);
+		}
+	}
 }
 
 

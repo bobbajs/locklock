@@ -35,7 +35,8 @@ obj/default/sound/Sound.o: sound/Sound.c sound/Sound.h sound/../Global.h \
   sound/../Command.h sound/../Song.h sound/../TestBot.h \
   sound/../CommandScheduler.h sound/../sound/Sound.h sound/../Graphic.h \
   sound/../MemoryMgr.h sound/../Range.h sound/../Cursor.h \
-  sound/../Button.h sound/../Frame.h sound/../libMad/mad.h
+  sound/../Button.h sound/../Frame.h sound/../libMad/mad.h \
+  sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h sound/AudioFormat.h
 
 sound/Sound.h:
 
@@ -154,3 +155,9 @@ sound/../Button.h:
 sound/../Frame.h:
 
 sound/../libMad/mad.h:
+
+sound/../DSP/PhaseVocoder.h:
+
+sound/../DSP/fft.h:
+
+sound/AudioFormat.h:

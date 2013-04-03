@@ -16,10 +16,10 @@ struct Range {
 };
 
 struct Range* initRange(int, int, int, int);
-void compareRange(struct Range*, struct Range*, int);
 void checkButtonCollision(void*, void*);
 void checkTxtCollisionForMouse(void*, void*);
 void checkImgCollisionForMouse(void*, void*);
+void actionBtnAnimation(void*);
 
 
 #endif /* RANGE_H_ */

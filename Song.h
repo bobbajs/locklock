@@ -19,9 +19,7 @@ struct Song {
 	int volume;
 	int pos;
 	int size;
-	bool isCached;
 	int id;
-	int* property;
 };
 
 struct Song* initSong(char*);
@@ -29,10 +27,10 @@ void killSong(struct Song**);
 void setSongName(struct Song*, char*);
 void setSongId(struct Song*, int);
 void setSongVolume(struct Song*, float);
+void setSongPitch(struct Song*, float, int);
 void playSong(struct Song*, float, int, int);
 void stopSong(struct Song*);
 void pauseSong(struct Song*);
-void resumeSong(struct Song*);
 void seekSong(struct Song*, unsigned int);
 void unloadSong(struct Song*);
 void loadSong(struct Song*);

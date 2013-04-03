@@ -31,6 +31,7 @@ obj/default/Graphic.o: Graphic.c Graphic.h Global.h \
   ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h RS232.h \
   Queue.h Packet.h Object.h Coder.h Playlist.h Database.h Command.h \
   Song.h TestBot.h CommandScheduler.h sound/Sound.h sound/../libMad/mad.h \
+  sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h sound/AudioFormat.h \
   MemoryMgr.h Range.h Cursor.h Button.h Frame.h
 
 Graphic.h:
@@ -136,6 +137,12 @@ CommandScheduler.h:
 sound/Sound.h:
 
 sound/../libMad/mad.h:
+
+sound/../DSP/PhaseVocoder.h:
+
+sound/../DSP/fft.h:
+
+sound/AudioFormat.h:
 
 MemoryMgr.h:
 

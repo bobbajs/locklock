@@ -1,6 +1,6 @@
 
 #include "Global.h"
-
+struct Cursor* mouse;
 bool loadSDCard(alt_up_sd_card_dev* device) {
 	if((device = alt_up_sd_card_open_dev("/dev/SD_Card")) != NULL) {
 		if (alt_up_sd_card_is_Present()) {
@@ -17,7 +17,7 @@ bool loadSDCard(alt_up_sd_card_dev* device) {
 }
 
 void initAnimate(struct Cursor* cursor) {
-	int timer = 2000000;
+	int timer = 3000000;
 	IOWR_16DIRECT(TIMESTAMP_BASE, 8, timer & 0xFFFF);
 	IOWR_16DIRECT(TIMESTAMP_BASE, 12, timer >> 16);
 	IOWR_16DIRECT(TIMESTAMP_BASE, 4, 0x07);
@@ -63,19 +63,34 @@ int main()
 	draw(35, 35, testImg);
 	killImage(testImg);*/
 	//alt_up_char_buffer_string(char_buffer, "Initialization Completed", 27, 5);
-	//graphicTester();
+
 
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
-	//alt_up_char_buffer_clear(char_buffer);
+	alt_up_char_buffer_clear(char_buffer);
+
+	//graphicTester();
 
 	struct Frame* mainFrame = initMainFrame();
 	mainFrame->drawFrame(mainFrame);
 
+
 	//Test End
-	struct Cursor* cursor = initCursor(10, 100);
+	mouse = initCursor(10, 100, mainFrame);
+	//graphicTester();
+
+	/*//drawAllSongsInList(2);
+	//drawAllSongsInList(2);
+	//int i;
+	//struct Frame* b;
+	//for (i = 0; i < 5000; i++){
+	//	drawAllSongsInList(2);
+		//b = initSongInListPanel(mainFrame, 2);
+		//killSongInListPanel(&b);
+		printf("Iteration %d\n", i);
+	}*/
 
 	initAudioBuffer();
-	initAnimate(cursor);
+	initAnimate(mouse);
 
 	int i = 2;
 
@@ -85,8 +100,6 @@ int main()
 		cmdProcessing(scheduler);
 
 		i = soundTester(i);
-
-		checkButtonCollision(cursor, mainFrame);
 
 	}
 

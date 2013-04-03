@@ -63,13 +63,26 @@ void removeSongFromList(int, int);
 
 void syncUpdatePos(int, int, int);
 
-void modifyPlaylistName(int, char*);
+void syncRepeatList(int);
+void repeatList(int);
+
+void modifyListName(int, char*);
 void shuffle(int);
 
 void moveSongToIndex(char*, int, char*);
 void removeList(int);
-void play_playlist(int);
-void repeatPlaylist(int);
+
+//index 20
+void playSongFromAllSongs(int, int, int);
+//index 21
+void openAllSongPanel();
+//index 22
+void openPlaylistsPanel();
+//index 23
+void openSongsFromList(int);
+//index 24
+void playSongFromList(int, int);
+
 void repeatCurrentSong();
 
 void reverse();
