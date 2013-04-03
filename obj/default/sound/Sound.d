@@ -32,11 +32,11 @@ obj/default/sound/Sound.o: sound/Sound.c sound/Sound.h sound/../Global.h \
   ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h \
   sound/../RS232.h sound/../Queue.h sound/../Packet.h sound/../Object.h \
   sound/../Coder.h sound/../Playlist.h sound/../Database.h \
-  sound/../Command.h sound/../Song.h sound/../TestBot.h \
-  sound/../CommandScheduler.h sound/../sound/Sound.h sound/../Graphic.h \
-  sound/../MemoryMgr.h sound/../Range.h sound/../Cursor.h \
-  sound/../Button.h sound/../Frame.h sound/../libMad/mad.h \
-  sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h sound/AudioFormat.h
+  sound/../Command.h sound/../Song.h sound/../CommandScheduler.h \
+  sound/../sound/Sound.h sound/../Graphic.h sound/../MemoryMgr.h \
+  sound/../Range.h sound/../Cursor.h sound/../Button.h sound/../Frame.h \
+  sound/../libMad/mad.h sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h \
+  sound/AudioFormat.h
 
 sound/Sound.h:
 
@@ -135,8 +135,6 @@ sound/../Database.h:
 sound/../Command.h:
 
 sound/../Song.h:
-
-sound/../TestBot.h:
 
 sound/../CommandScheduler.h:
 

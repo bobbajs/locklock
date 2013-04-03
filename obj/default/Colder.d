@@ -30,7 +30,7 @@ obj/default/Colder.o: Colder.c Coder.h Global.h \
   sound/../Global.h sound/SoundMixer.h PushKeyController.h \
   ../StereoSystem_bsp//drivers/inc/altera_avalon_pio_regs.h RS232.h \
   Queue.h Packet.h Object.h Playlist.h Database.h Command.h Song.h \
-  TestBot.h CommandScheduler.h sound/Sound.h sound/../libMad/mad.h \
+  CommandScheduler.h sound/Sound.h sound/../libMad/mad.h \
   sound/../DSP/PhaseVocoder.h sound/../DSP/fft.h sound/AudioFormat.h \
   Graphic.h MemoryMgr.h Range.h Cursor.h Button.h Frame.h
 
@@ -127,8 +127,6 @@ Database.h:
 Command.h:
 
 Song.h:
-
-TestBot.h:
 
 CommandScheduler.h:
 

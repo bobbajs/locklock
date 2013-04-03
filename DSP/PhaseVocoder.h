@@ -10,12 +10,9 @@
 
 #include "fft.h"
 #include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
-
-#define MAX_FRAME_LENGTH 2048
 
 void pitchShift(float, long, long, long, float, float *, float *);
 
